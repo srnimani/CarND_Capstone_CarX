@@ -39,20 +39,15 @@ class DBWNode(object):
         max_lat_accel       = rospy.get_param('~max_lat_accel', 3.)
         max_steer_angle     = rospy.get_param('~max_steer_angle', 8.)
 
-        # PID Control Inits
-        throttle_kp         = 0.3
-        throttle_ki         = 0.003
-        throttle_kd         = 4.0
-
         # Publishers
         self.steer_pub      = rospy.Publisher('/vehicle/steering_cmd', SteeringCmd, queue_size=1)
         self.throttle_pub   = rospy.Publisher('/vehicle/throttle_cmd', ThrottleCmd, queue_size=1)
         self.brake_pub      = rospy.Publisher('/vehicle/brake_cmd', BrakeCmd, queue_size=1)
 
-        # Pass all params to `Controller` constructor, parames needed for PID Controller (kp, ki, kd) and
-        # Yaw Controller (wheel_base, steer_ratio, min_speed, max_lat_accel, max_steer_angle)
+        # Pass all params to `Controller` constructor and Yaw Controller (wheel_base, steer_ratio, min_speed,
+        # max_lat_accel, max_steer_angle)
 
-        self.controller = Controller(vehicle_mass, wheel_radius, decel_limit, wheel_base, steer_ratio, max_lat_accel, max_steer_angle, throttle_kp, throttle_ki, throttle_kd)
+        self.controller = Controller(vehicle_mass, wheel_radius, decel_limit, wheel_base, steer_ratio, max_lat_accel, max_steer_angle)
 
         # Subscriptions
         rospy.Subscriber('/dbw_enabled', Bool, self.dbw_cb, queue_size=1)

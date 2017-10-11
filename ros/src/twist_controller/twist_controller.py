@@ -8,12 +8,17 @@ GAS_DENSITY = 2.858
 ONE_MPH     = 0.44704
 MAX_SPEED   = 10.0
 
+# PID Control Inits
+throttle_Kp = 0.3
+throttle_Ki = 0.003
+throttle_Kd = 4.0
+
 
 class Controller(object):
-    def __init__(self, vehicle_mass, wheel_radius, decel_limit, wheel_base, steer_ratio, max_lat_accel, max_steer_angle, Kp, Ki, Kd):
+    def __init__(self, vehicle_mass, wheel_radius, decel_limit, wheel_base, steer_ratio, max_lat_accel, max_steer_angle):
 
         min_speed           = 1.0 * ONE_MPH
-        self.throttle_pid   = PID(Kp, Ki, Kd)
+        self.throttle_pid   = PID(throttle_Kp, throttle_Ki, throttle_Kd)
         self.yaw_control    = YawController(wheel_base, steer_ratio, min_speed, max_lat_accel, max_steer_angle)
 
         self.v_mass         = vehicle_mass
@@ -55,13 +60,13 @@ class Controller(object):
 
             deceleration        = abs(error) / dt
 
-            if abs(deceleration) > abs(self.d_limit)*500:
-                deceleration = self.d_limit*500  # Limited to decelartion limits
+            if abs(deceleration) > abs(self.d_limit):
+                deceleration = self.d_limit # Limited to decelartion limits
             longitudinal_force  = self.v_mass * deceleration
             brake               = longitudinal_force * self.w_radius
-            throttle        = 0.0
+            throttle            = 0.0
         else:
-            brake       = 0.0
+            brake               = 0.0
 
         # Steering control is using Yaw Control..
         steer = self.yaw_control.get_steering(target_v.x, target_omega.z, current_v.x)
